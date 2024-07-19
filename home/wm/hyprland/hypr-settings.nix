@@ -12,8 +12,14 @@ let
 in
 {
   source = [
-    "$HOME/.config/hypr/monitors.conf"
+    # "$HOME/.config/hypr/monitors.conf"
   ];
+
+ # monitor = [
+ #   ",preferred,auto,auto"
+ #     "eDP-1,2256x1504,0x0,1.566667"
+ # ];
+
 
   env = [
     "XDG_SESSION_DESKTOP, Hyprland"
@@ -40,7 +46,6 @@ in
       "A, exec, ${grimblast}/bin/grimblast --freeze save area - | ${pkgs.swappy}/bin/swappy -f -"
       "SHIFT, A, exec, ${grimblast}/bin/grimblast --freeze save output - | ${pkgs.swappy}/bin/swappy -f -"
       "E, exec, ${thunar_pkg}/bin/thunar"
-      "W, exec, ${config.programs.librewolf.package}/bin/librewolf"
       "Q, exec, ${config.programs.kitty.package}/bin/kitty"
       "R, exec, ${config.programs.rofi.package}/bin/rofi -click-to-exit -show drun"
       "SHIFT, R, exec, ${import ./scripts/hyreload.nix { inherit pkgs config userSettings; }}"
@@ -165,7 +170,8 @@ in
   };
 
   input = {
-    kb_layout = "de";
+    kb_layout = "eurkey";
+    kb_options = "caps:escape";
     follow_mouse = 2;
 
     touchpad = {
@@ -255,7 +261,7 @@ in
   };
 
   animations = {
-    enabled = false;
+    # enabled = false;
     /* bezier = "myBezier, 0.05, 0.9, 0.1, 1.0";
     animation = [
       "windows, 1, 5, myBezier"

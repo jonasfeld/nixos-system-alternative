@@ -11,5 +11,7 @@
     noto-fonts-cjk
     font-awesome
     montserrat
+    dm-sans
+    liberation_ttf
   ];
 }

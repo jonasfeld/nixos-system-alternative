@@ -9,14 +9,19 @@
 
   # Bootloader
   boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.systemd-boot.configurationLimit = 10;
+  boot.loader.efi.canTouchEfiVariables = true;
   boot.lanzaboote = {
     enable = true;
     pkiBundle = "/etc/secureboot";
   };
 
-  # boot.kernelParams = [ "i915.force_probe=46a6" ];
 
-  networking.hostName = "meoww";
+  # we need the new kernel, right? :)
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  boot.initrd.luks.devices."luks-b350adf5-976c-4a6e-8500-2cc84d73e24d".device = "/dev/disk/by-uuid/b350adf5-976c-4a6e-8500-2cc84d73e24d";
+  networking.hostName = "nixos"; # Define your hostname.
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -25,23 +30,19 @@
   time.timeZone = "Europe/Berlin";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_GB.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "de_DE.UTF-8";
     LC_IDENTIFICATION = "de_DE.UTF-8";
     LC_MEASUREMENT = "de_DE.UTF-8";
     LC_MONETARY = "de_DE.UTF-8";
     LC_NAME = "de_DE.UTF-8";
-    LC_NUMERIC = "en_DK.UTF-8";
+    LC_NUMERIC = "de_DE.UTF-8";
     LC_PAPER = "de_DE.UTF-8";
     LC_TELEPHONE = "de_DE.UTF-8";
-    LC_TIME = "en_IE.UTF-8";
+    LC_TIME = "de_DE.UTF-8";
   };
 
-  services.logind = {
-    powerKey = "suspend";
-    lidSwitch = "suspend";
-  };
 
   xdg.portal = {
     enable = true;
@@ -79,20 +80,19 @@
 
   # Configure console keymap
   console = {
-    keyMap = "de";
+    useXkbConfig = true;
     earlySetup = true;
     font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
   };
 
   # Sound
+  sound.enable = true;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
-    # alsa.support32Bit = true;
+    alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
     wireplumber = {
       enable = true;
       extraConfig = {
@@ -104,13 +104,13 @@
   };
   
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
 
   # User Managment
-  users.users.nico = {
+  users.users.jonasfeld = {
     isNormalUser = true;
-    description = "nico UwU";
+    description = "Jonas";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
+    initialPassword = "password";
     shell = pkgs.zsh;
   };
 
@@ -122,11 +122,19 @@
     
     powertop
     sbctl
-    vim 
+    neovim
+    git
+    tmux
     wget
     psmisc
+
+    # added by me - do I need this?
+    usbutils
+    qemu
+    quickemu
   ];
 
+  # Hyprland
   programs.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -150,9 +158,8 @@
   programs = {
     zsh.enable = true;
     nix-ld.enable = true;
-    # nix-ld.libraries = with pkgs; [];
     java.enable = true;
-    steam.enable = true;
+    # steam.enable = true; # not right now :)
   };
 
   virtualisation.docker = {
@@ -171,16 +178,14 @@
 
   networking.firewall = { 
     enable = true;
+    allowedTCPPorts = [25565];
   };
 
-  hardware.opentabletdriver.enable = true;
+  # hardware.opentabletdriver.enable = true;
 
-  hardware.enableAllFirmware = true;
+  # hardware.enableAllFirmware = true;
   # Power Management
-  # powerManagement.enable = true;
-  # powerManagement.powertop.enable = true;
   services.thermald.enable = true;
-  # services.power-profiles-daemon.enable = false;
   services.tlp = {
     enable = true;
     settings = {
@@ -197,27 +202,23 @@
   };
   hardware.graphics = {
     enable = true;
-    extraPackages = with pkgs; [
-      # intel-media-driver # LIBVA_DRIVER_NAME=iHD
-      intel-vaapi-driver # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
-      vaapiVdpau
-      libvdpau-va-gl
-    ];
   };
-  environment.sessionVariables = { LIBVA_DRIVER_NAME = "i965"; NIXOS_OZONE_WL = "1"; }; # Force intel-media-driver
+  environment.sessionVariables = { 
+    NIXOS_OZONE_WL = "1";
+  }; # Force intel-media-driver
 
   environment.etc.hosts.mode = "0644";
 
-  nix.optimise = {
-    automatic = true;
-    dates = [ "weekly" ];
-  };
+  # nix.optimise = {
+  #   automatic = true;
+  #   dates = [ "weekly" ];
+  # };
 
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
+  # nix.gc = {
+  #   automatic = true;
+  #   dates = "weekly";
+  #   options = "--delete-older-than 14d";
+  # };
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
@@ -226,4 +227,22 @@
   };
 
   system.stateVersion = "24.05";
+
+  # Edits
+  services.xserver.xkb = {
+    layout = "eurkey";
+    extraLayouts.eurkey = {
+      description = "EurKEY layout - https://eurkey.steffen.bruentjen.eu";
+      languages = ["eng"];
+      symbolsFile = ./keyboard_eurkey-1.2;
+    };
+  };
+
+  services.fprintd.enable = true;
+  services.fwupd.enable = true;
+  services.printing.enable = true;
+
+  users.defaultUserShell = pkgs.zsh;
+
+  # TODO pam/polkit?
 }

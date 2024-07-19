@@ -7,13 +7,13 @@
     ./git.nix
     ./gpg.nix
     ./kitty
-    ./librewolf.nix
+    # ./librewolf.nix
     ./neovim
-    ./obs-studio.nix
+    # ./obs-studio.nix
     ./shell
     ./ssh.nix
-    ./thunderbird.nix
-    ./vim.nix
+    # ./thunderbird.nix
+    # ./vim.nix
     ./vscode.nix
     ./yazi.nix
     ./zellij.nix
@@ -21,45 +21,62 @@
 
   nixpkgs.config.allowUnfree = true;
   home.packages = with pkgs; [
-    # Coding stuff
+    # dev
+    ollama
     bear
     gdb
-    github-desktop
-    gitkraken
-    (isabelle2024-rc1-vsce.overrideAttrs { applyNvimLspPatch = true; })
-    jetbrains.idea-ultimate
-    ocamlPackages.utop
-    pwndbg
-    (python3.withPackages ( python-pkgs: [
-      python311Packages.pwntools
-    ]))
-    texlive.combined.scheme-full
+    nodejs
+    gh
+    android-studio
+    cmake
+    cargo
+    rustc
+    vscodium
+    beekeeper-studio
 
-    # Misc
-    anki
+    # user programs
+    anki-bin
+    prismlauncher
     btop
-    copyq
-    desmume
-    element-desktop
-    fastfetch
     inkscape
     gimp
     libqalculate
-    libreoffice-fresh
-    lolcat
-    nixln-edit
     obsidian
-    speedread
+    wl-clipboard
+    # nixln-edit
     spotify
     spotify-tray
-    telegram-desktop
+
+    # etc
+    copyq
     tree
-    ungoogled-chromium
     unzip
-    vesktop
-    wl-clipboard
-    xournalpp
+    zoxide
+
+    # messengers
+    element-desktop
+    telegram-desktop
+    # vesktop
     zoom-us
+    signal-desktop
+    whatsapp-for-linux
+    mattermost-desktop
+
+    # essentials
+    firefox
+    thunderbird
+    keepassxc
+    onedrive
+
+    texlive.combined.scheme-full
+
+    # work related
+    google-chrome
+    slack
+
+    # uni
+    calibre
+    eduvpn-client
   ];
 
   programs.zathura.enable = true;

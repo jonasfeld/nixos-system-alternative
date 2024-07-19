@@ -11,13 +11,13 @@
     ./wm
   ];
 
-  home.username = "nico";
-  home.homeDirectory = "/home/nico";
+  home.username = "jonasfeld";
+  home.homeDirectory = "/home/jonasfeld";
 
   colorScheme = userSettings.colorScheme;
   
   home.sessionVariables = {
-    DOT_DIR = "${config.home.homeDirectory}/dotfiles";
+    DOT_DIR = "${config.home.homeDirectory}/dev/projects/nixos-system-alternative";
   };
 
   systemd.user.startServices = true;

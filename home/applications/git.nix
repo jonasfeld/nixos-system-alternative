@@ -3,11 +3,16 @@
 {
   programs.git = {
     enable = true;
-    userName = "Nico Lintner";
-    userEmail = "118087966+nlintn@users.noreply.github.com";
-    extraConfig = {
-      commit.gpgsign = true;
-      pull.ff = "only";
-    };
+    # userName = "jonasfeld";
+    # userEmail = "";
+    # extraConfig = {
+    #   commit.gpgsign = true;
+    #   pull.ff = "only";
+    # };
+  };
+
+  programs.gh.enable = true;
+  home.file = {
+    ".gitconfig".source = ../../dots/git/.gitconfig;
   };
 }

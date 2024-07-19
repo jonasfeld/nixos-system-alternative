@@ -12,13 +12,15 @@
       vim.o.number = true
       vim.o.relativenumber = true
 
-      vim.o.scrolloff = 10
+      vim.o.scrolloff = 8
 
       vim.o.signcolumn = 'yes:1'
 
       vim.o.ignorecase = true
+      vim.o.smartcase = true
 
       vim.o.tabstop = 4
+      vim.o.softtabstop = 4
       vim.o.shiftwidth = 4
       vim.o.expandtab = true
 
@@ -49,7 +51,6 @@
       (import ./battery-nvim.nix { inherit pkgs; }).package
       cmp_luasnip
       cmp-nvim-lsp
-      (import ./isabelle-syn-nvim.nix { inherit pkgs; }).package
       markdown-preview-nvim
       neodev-nvim
       nvim-web-devicons
@@ -84,12 +85,6 @@
         plugin = guess-indent-nvim;
         type = "lua";
         config = ''require("guess-indent").setup {}'';
-      }
-
-      {
-        plugin = (import ./isabelle-lsp-nvim/package-config.nix { inherit pkgs; }).package;
-        type = "lua";
-        config = (import ./isabelle-lsp-nvim/package-config.nix { inherit pkgs; }).config;
       }
 
       {
@@ -167,19 +162,80 @@
       {
         plugin = vimtex;
       }
+
+      {
+        plugin = harpoon;
+        type = "lua";
+        config = ''
+          local mark = require("harpoon.mark")
+          local ui = require("harpoon.ui")
+
+          vim.keymap.set("n", "<leader>a", mark.add_file)
+          vim.keymap.set("n", "<leader>h", ui.toggle_quick_menu)
+          vim.keymap.set("n", "<leader>j", function() ui.nav_file(1) end)
+          vim.keymap.set("n", "<leader>k", function() ui.nav_file(2) end)
+          vim.keymap.set("n", "<leader>l", function() ui.nav_file(3) end)
+
+          require("harpoon").setup({
+              -- enable tabline with harpoon marks
+              tabline = true,
+              tabline_prefix = "    ",
+              tabline_suffix = "    ",
+              })
+        '';
+      }
+
+      {
+        plugin = lazy-lsp-nvim;
+        type = "lua";
+        config = ''
+          require("lazy-lsp").setup {
+             excluded_servers = {
+               "ccls",                            -- prefer clangd
+                 "denols",                          -- prefer eslint and tsserver
+                 "docker_compose_language_service", -- yamlls should be enough?
+                 "flow",                            -- prefer eslint and tsserver
+                 "ltex",                            -- grammar tool using too much CPU
+                 "quick_lint_js",                   -- prefer eslint and tsserver
+                 "rnix",                            -- archived on Jan 25, 2024
+                 "scry",                            -- archived on Jun 1, 2023
+                 "tailwindcss",                     -- associates with too many filetypes
+                 "sourcekit",                       -- spams log
+                 "nixd",                            -- prefer nil
+             },
+             preferred_servers = {
+               -- markdown = {},
+               python = { "pyright", "ruff_lsp" },
+             },
+             prefer_local = true, -- Prefer locally installed servers over nix-shell
+             -- Default config passed to all servers to specify on_attach callback and other options.
+             default_config = {
+               flags = {
+                 debounce_text_changes = 150,
+               },
+               -- on_attach = on_attach,
+               -- capabilities = capabilities,
+             },
+             -- Override config for specific servers that will passed down to lspconfig setup.
+             -- Note that the default_config will be merged with this specific configuration so you don't need to specify everything twice.
+             configs = {
+               lua_ls = {
+                 settings = {
+                   Lua = {
+                     diagnostics = {
+                       -- Get the language server to recognize the `vim` global
+                         globals = { "vim" },
+                     },
+                   },
+                 },
+               },
+             },
+            }
+        '';
+      }
     ];
 
     extraPackages = with pkgs; [
-      # Language Servers
-      clang-tools_17
-      jdt-language-server
-      lua-language-server
-      nil
-      pyright
-      ocamlPackages.ocaml-lsp
-      rust-analyzer
-      texlab
-
       # Misc
       acpi
       fd

@@ -1,5 +1,5 @@
 {
-  description = "UwU";
+  description = "Personal NixOS flake (mostly yoinked)";
 
   outputs = { self, nixpkgs, home-manager, ... } @ inputs:
     let
@@ -17,7 +17,7 @@
       overlays = { nixpkgs.overlays = [ inputs.nixpkgs-overlay.overlays.default ]; };
     in {
       nixosConfigurations = {
-        meoww = lib.nixosSystem {
+        nixos = lib.nixosSystem {
           inherit system;
           modules = [ ./configuration.nix ];
           specialArgs = {
@@ -27,7 +27,7 @@
         };
       };
       homeConfigurations = {
-        nico = home-manager.lib.homeManagerConfiguration {
+        jonasfeld = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [
             overlays
@@ -61,6 +61,7 @@
     hyprland = {
       type = "git";
       url = "https://github.com/hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
       submodules = true;
     };
     split-monitor-workspaces = {

@@ -25,6 +25,7 @@ in {
   imports = [ ./base16-colors.nix ];
   programs.kitty = {
     enable = true;
+    package = pkgs.kitty;
     settings = {
       background_opacity = "0.85";
 
